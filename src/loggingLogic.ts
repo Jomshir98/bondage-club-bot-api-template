@@ -1,4 +1,4 @@
-import { logger, LogicBase } from "bondage-club-headless";
+import { logger, LogicBase } from "bondage-club-bot-api";
 
 export class LoggingLogic extends LogicBase {
 	/**

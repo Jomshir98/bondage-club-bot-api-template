@@ -1,4 +1,4 @@
-import { Init, logger, Connect, AssetGet, logConfig, LogLevel } from "bondage-club-headless";
+import { Init, logger, Connect, AssetGet, logConfig, LogLevel } from "bondage-club-bot-api";
 import { TestLogic } from "./testLogic";
 
 // To reduce loglevel

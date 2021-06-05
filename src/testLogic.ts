@@ -1,4 +1,4 @@
-import { logger } from "bondage-club-headless";
+import { logger } from "bondage-club-bot-api";
 import { LoggingLogic } from "./loggingLogic";
 
 // Note:

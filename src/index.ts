@@ -1,40 +1,65 @@
 import { Init, logger, Connect, AssetGet, logConfig, LogLevel } from "bondage-club-bot-api";
 import { TestLogic } from "./testLogic";
+import { USERNAME, PASSWORD } from "./secrets";
 
-// To reduce loglevel
-// logConfig.logLevel = LogLevel.INFO;
+import fsPromises from "fs/promises";
 
-let testConnection: API_Connector | null = null;
+// To reduce loglevel, change it here
+logConfig.logLevel = LogLevel.DEBUG;
 
-void Init().then(async () => {
-	// @ts-ignore: dev
-	global.AssetGet = AssetGet;
+let conn: API_Connector | null = null;
 
-	// Username and password goes here
-	testConnection = await Connect("user", "pass");
+const time = new Date();
+const timestring = `${time.getFullYear() % 100}${(time.getMonth() + 1).toString().padStart(2, "0")}${time.getDate().toString().padStart(2, "0")}_` +
+	`${time.getHours().toString().padStart(2, "0")}${time.getMinutes().toString().padStart(2, "0")}`;
+const logPrefix = `${timestring}_${process.pid}`;
 
-	// @ts-ignore: dev
-	global.conn = testConnection;
+fsPromises
+	.mkdir("./data/logs", { recursive: true })
+	.then(() => fsPromises.open(`./data/logs/${logPrefix}_debug.log`, "w"))
+	.then(log => logger.addFileOutput(LogLevel.DEBUG, log))
+	.then(() => fsPromises.open(`./data/logs/${logPrefix}_error.log`, "as"))
+	.then(log => logger.addFileOutput(LogLevel.ALERT, log))
+	.then(Init)
+	.then(async () => {
+		conn = await Connect(USERNAME, PASSWORD);
 
-	const testLogic = new TestLogic();
-	// @ts-ignore: TODO
-	testConnection.logic = testLogic;
-	// @ts-ignore: dev
-	global.logic = testLogic;
+		const testLogic = new TestLogic();
+		conn.logic = testLogic;
 
-	// To work properly bot *needs* to be room admin!
-	await testConnection.ChatRoomJoinOrCreate({
-		Name: "Bot test",
-		Description: "[BOT] Testing room for jomshir's bots",
-		Background: "MainHall",
-		Limit: 10,
-		Private: true,
-		Locked: false,
-		Admin: [testConnection.Player.MemberNumber, 23664],
-		Ban: [],
-		Game: "",
-		BlockCategory: ["Leashing"]
+
+		// These just expose some things in debug console
+		// @ts-ignore: dev
+		global.AssetGet = AssetGet;
+		// @ts-ignore: dev
+		global.conn = conn;
+		// @ts-ignore: dev
+		global.logic = testLogic;
+
+		// To work properly bot *needs* to be room admin!
+		await conn.ChatRoomJoinOrCreate({
+			Name: "Bot test",
+			Description: "[BOT] Testing room for jomshir's bots",
+			Background: "MainHall",
+			Limit: 10,
+			Private: true,
+			Locked: false,
+			Admin: [conn.Player.MemberNumber],
+			Ban: [],
+			Game: "",
+			BlockCategory: ["Leashing"]
+		});
+
+		logger.alert("Ready!");
+	}).catch(err => {
+		logger.fatal("Error while running:", err);
 	});
 
-	logger.alert("Ready!");
+logger.onfatal(() => {
+	conn?.disconnect();
+	conn = null;
+});
+
+process.once("SIGINT", () => {
+	logger.fatal("Interrupted");
 });

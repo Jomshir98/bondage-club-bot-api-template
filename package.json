@@ -5,8 +5,8 @@
   "private": true,
   "scripts": {
     "build": "tsc -p .",
-    "start": "yarn run build && node build/index.js",
-    "start-dev": "yarn run build && node --inspect build/index.js",
+    "start": "yarn run build && node --trace-warnings --unhandled-rejections=strict build/index.js",
+    "start-dev": "yarn run build && node --trace-warnings --unhandled-rejections=strict --inspect build/index.js",
     "test": "tsc --noEmit -p . && eslint src"
   },
   "author": "Jomshir98",

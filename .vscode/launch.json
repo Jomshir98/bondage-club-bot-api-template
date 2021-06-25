@@ -2,13 +2,6 @@
 	"version": "0.2.0",
 	"configurations": [
 		{
-			"name": "Attach",
-			"port": 9229,
-			"request": "attach",
-			"skipFiles": ["<node_internals>/**"],
-			"type": "pwa-node"
-		},
-		{
 			"name": "Run ts-node",
 			"type": "node",
 			"request": "launch",
@@ -22,6 +15,13 @@
 				"TS_NODE_PROJECT": "${workspaceRoot}/tsconfig.json",
 				"TS_NODE_FILES": "true"
 			}
+		},
+		{
+			"name": "Attach",
+			"port": 9229,
+			"request": "attach",
+			"skipFiles": ["<node_internals>/**"],
+			"type": "pwa-node"
 		}
 	]
 }

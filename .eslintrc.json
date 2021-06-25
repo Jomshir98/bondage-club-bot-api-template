@@ -2,19 +2,23 @@
 	"extends": [
 		"eslint:recommended",
 		"plugin:@typescript-eslint/recommended",
-		"plugin:@typescript-eslint/recommended-requiring-type-checking",
-		"prettier"
+		"plugin:@typescript-eslint/recommended-requiring-type-checking"
 	],
 	"env": {
 		"es6": true,
 		"node": true
 	},
 	"parser": "@typescript-eslint/parser",
-	"parserOptions": {
-		"project": "tsconfig.json",
-		"sourceType": "module"
-	},
 	"plugins": ["@typescript-eslint"],
+	"overrides": [
+		{
+			"files": ["*.ts"],
+			"parserOptions": {
+				"project": ["./tsconfig.json"],
+				"sourceType": "module"
+			}
+		}
+	],
 	"root": true,
 	"rules": {
 		"@typescript-eslint/no-inferrable-types": "off",
@@ -56,10 +60,15 @@
 			}
 		],
 		"@typescript-eslint/semi": "warn",
-		"@typescript-eslint/indent": ["warn", "tab", {
-			"SwitchCase": 1,
-			"ignoredNodes": ["ConditionalExpression"]
-		}],
+		"@typescript-eslint/indent": [
+			"warn",
+			"tab",
+			{
+				"SwitchCase": 1,
+				"ignoredNodes": ["ConditionalExpression"]
+			}
+		],
+		"@typescript-eslint/no-unnecessary-boolean-literal-compare": "warn",
 		"comma-dangle": "error",
 		"eqeqeq": ["error", "always", { "null": "ignore" }],
 		"id-blacklist": ["error", "any", "Number", "number", "String", "string", "Boolean", "boolean", "Undefined", "undefined"],

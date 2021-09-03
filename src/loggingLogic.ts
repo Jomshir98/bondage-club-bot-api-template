@@ -10,9 +10,9 @@ export class LoggingLogic extends LogicBase {
 	protected onMessage(connection: API_Connector, message: BC_Server_ChatRoomMessage, sender: API_Character): void {
 		const dict = message.Dictionary === undefined ? "" : `; dict: ${JSON.stringify(message.Dictionary)}`;
 		if (message.Type === "Hidden") {
-			logger.debug(`Message ${message.Type} from ${sender.Name} (${sender.MemberNumber}): ` + `${message.Content} ${dict}`);
+			logger.debug(`Message ${message.Type} from ${sender.Name} (${sender.MemberNumber}): ` + `${message.Content}${dict}`);
 		} else {
-			logger.info(`Message ${message.Type} from ${sender.Name} (${sender.MemberNumber}): ` + `${message.Content} ${dict}`);
+			logger.info(`Message ${message.Type} from ${sender.Name} (${sender.MemberNumber}): ` + `${message.Content}${dict}`);
 		}
 	}
 
@@ -25,7 +25,7 @@ export class LoggingLogic extends LogicBase {
 	protected onCharacterLeft(connection: API_Connector, character: API_Character, intentional: boolean): void {
 		logger.info(
 			`Character ${character.Name} (${character.MemberNumber}) ` +
-				`left room ${connection.chatRoom.Name}, intentional: ${intentional}`
+			`left room ${connection.chatRoom.Name}, intentional: ${intentional}`
 		);
 	}
 
@@ -63,7 +63,7 @@ export class LoggingLogic extends LogicBase {
 	 * @param beep Received beep data
 	 */
 	protected onBeep(connection: API_Connector, beep: BC_Server_AccountBeep): void {
-		logger.alert(`Received beep from ${beep.MemberName} (${beep.MemberNumber}) in ${beep.ChatRoomSpace}:${beep.ChatRoomName}`);
+		// logger.alert(`Received beep from ${beep.MemberName} (${beep.MemberNumber}) in ${beep.ChatRoomSpace}:${beep.ChatRoomName}`);
 	}
 
 	/**
@@ -91,17 +91,29 @@ export class LoggingLogic extends LogicBase {
 	 */
 	protected onCharacterEvent(connection: API_Connector, event: AnyCharacterEvent): void {
 		switch (event.name) {
-			case "ItemAdd":
+			case "ItemAdd": {
 				if (event.initial) return;
-				logger.info(`ItemAdd for ${event.character.Name}: ${event.item.Group}:${event.item.Name}`);
+				const source = event.character === event.source ? "" : ` from ${event.source.Name} (${event.source.MemberNumber})`;
+				logger.info(
+					`ItemAdd for ${event.character.Name} (${event.character.MemberNumber})${source}: ${event.item.Group}:${event.item.Name}`
+				);
 				break;
-			case "ItemChange":
+			}
+			case "ItemChange": {
 				if (event.initial) return;
-				logger.info(`ItemChange for ${event.character.Name}: ${event.item.Group}:${event.item.Name}`);
+				const source = event.character === event.source ? "" : ` from ${event.source.Name} (${event.source.MemberNumber})`;
+				logger.info(
+					`ItemChange for ${event.character.Name} (${event.character.MemberNumber})${source}: ${event.item.Group}:${event.item.Name}`
+				);
 				break;
-			case "ItemRemove":
-				logger.info(`ItemRemove for ${event.character.Name}: ${event.item.Group}:${event.item.Name}`);
+			}
+			case "ItemRemove": {
+				const source = event.character === event.source ? "" : ` from ${event.source.Name} (${event.source.MemberNumber})`;
+				logger.info(
+					`ItemRemove for ${event.character.Name} (${event.character.MemberNumber})${source}: ${event.item.Group}:${event.item.Name}`
+				);
 				break;
+			}
 			case "PoseChanged":
 				logger.info(`PoseChanged for ${event.character.Name}: ${event.character.Pose.map(P => P.Name)}`);
 				break;
@@ -112,6 +124,26 @@ export class LoggingLogic extends LogicBase {
 				// @ts-expect-error: We shouldn't reach this
 				logger.info(`Unknown character event ${event.name} from ${event.character.Name}`);
 				break;
+		}
+	}
+
+	/**
+	 * Fires on any bot event created by any logic
+	 * @param connection Originating connection
+	 * @param event The received event
+	 */
+	protected onBotEvent(connection: API_Connector, event: AnyBotEvent): void {
+		if (event.name === "Message") {
+			const dict = event.Dictionary == null ? "" : `; dict: ${JSON.stringify(event.Dictionary)}`;
+			const tc = event.Target !== null && connection.chatRoom.characters.find(c => c.MemberNumber === event.Target);
+			const target = event.Target === null ? "" : `to ${tc || event.Target} `;
+			if (event.Type !== "Hidden") {
+				const msg = `Bot "${connection.Player.Name}" message ${event.Type} ` +
+					target +
+					`: ` +
+					`${event.Content}${dict}`;
+				logger.debug(msg);
+			}
 		}
 	}
 }

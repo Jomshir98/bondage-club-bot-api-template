@@ -7,6 +7,7 @@ import * as fs from "fs";
 // To reduce loglevel, change it here
 SetConsoleOutput(LogLevel.DEBUG);
 
+//#region Logging into files
 const time = new Date();
 const timestring = `${time.getFullYear() % 100}${(time.getMonth() + 1).toString().padStart(2, "0")}${time.getDate().toString().padStart(2, "0")}_` +
 	`${time.getHours().toString().padStart(2, "0")}${time.getMinutes().toString().padStart(2, "0")}`;
@@ -15,6 +16,7 @@ const logPrefix = `${timestring}_${process.pid}`;
 fs.mkdirSync(`./data/logs`, { recursive: true });
 AddFileOutput(`./data/logs/${logPrefix}_debug.log`, false, LogLevel.DEBUG);
 AddFileOutput(`./data/logs/${logPrefix}_error.log`, true, LogLevel.ALERT);
+//#endregion
 
 let conn: API_Connector | null = null;
 let testLogic: TestLogic | null = null;
@@ -52,7 +54,7 @@ async function run() {
 
 Init()
 	.then(run, err => {
-		logger.fatal("Asset loading rejected:", err);
+		logger.fatal("Init rejected:", err);
 	})
 	.catch(err => {
 		logger.fatal("Error while running:", err);

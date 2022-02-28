@@ -1,6 +1,6 @@
 {
   "name": "bondage-club-headless-template",
-  "version": "0.3.3",
+  "version": "0.3.4",
   "description": "Template for custom scripts for headless client for Bondage Club",
   "private": true,
   "scripts": {
@@ -17,7 +17,7 @@
   "dependencies": {
     "@types/lodash": "^4.14.178",
     "@types/node": "^17.0.21",
-    "bondage-club-bot-api": "./bondage-club-bot-api-v0.3.3.tgz",
+    "bondage-club-bot-api": "./bondage-club-bot-api-v0.3.4.tgz",
     "lodash": "^4.17.20"
   },
   "devDependencies": {

@@ -38,6 +38,9 @@ async function run() {
 	// To work properly bot *needs* to be room admin!
 	await conn.ChatRoomJoinOrCreate({
 		Name: "Bot test",
+		// Space of the room is, if the bot room will be visible in Female/Mixed/Male/Asylum area.
+		// For more details see: https://gitgud.io/BondageProjects/Bondage-College/-/blob/master/BondageClub/Screens/Online/ChatRoom/ChatRoom.js#L8
+		Space: "X",
 		Description: "[BOT] Testing room for jomshir's bots",
 		Background: "MainHall",
 		Limit: 10,
